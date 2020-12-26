@@ -1,6 +1,9 @@
 import argparse
 import json
 import re
+import datetime
+import sys
+
 import requests
 
 from tension_meter import utils
@@ -85,7 +88,7 @@ def get_method_parser():
 
 
 def get_details_parser(method_parser):
-    parser = argparse.ArgumentParser(description='', parents=[method_parser])
+    parser = argparse.ArgumentParser(description='', add_help=False, parents=[method_parser])
     parser.add_argument(
         'url',
         type=str,
@@ -113,6 +116,28 @@ def get_details_parser(method_parser):
     return parser
 
 
+def get_testing_parser(details_parser):
+    parser = argparse.ArgumentParser(description='', parents=[details_parser])
+    parser.add_argument(
+        '-n', '--count',
+        type=int,
+        default=-1,
+        help=''
+    )
+    parser.add_argument(
+        '-t', '--time',
+        type=int,
+        help=''
+    )
+    parser.add_argument(
+        '-a', '--template',
+        type=str,
+        action=JsonObject,
+        help=''
+    )
+    return parser
+
+
 def get_method(parser):
     methods = []
     for method, selected in vars(parser.parse_known_args()[0]).items():
@@ -126,7 +151,15 @@ def get_method(parser):
 
 
 def get_target_details(parser):
-    details = vars(parser.parse_args())
+    details = vars(parser.parse_known_args()[0])
     url = details['url']
     url = url if re.search(URL_REGEX, url) else f'http://{url}'
     return url, *[details[key] for key in ('headers', 'data', 'params')]
+
+
+def get_testing_details(parser):
+    details = vars(parser.parse_args())
+    count = details['count'] if details['count'] > 0 else sys.maxsize
+    time = datetime.datetime.now() + datetime.timedelta(minutes=details['time']) if details['time'] else None
+
+    return count, time, details['template']
