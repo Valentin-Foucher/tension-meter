@@ -37,7 +37,10 @@ class JsonObject(argparse.Action):
         super().__init__(option_strings, dest, nargs=nargs, **kwargs)
 
     def __call__(self, parser, namespace, values, option_string=None):
-        setattr(namespace, self.dest, json.loads(values))
+        try:
+            setattr(namespace, self.dest, json.loads(values))
+        except json.JSONDecodeError:
+            raise utils.ArgumentException(f'An error occurred while parsing {self.dest} as JSON: {values}')
 
 
 def get_method_parser():
@@ -123,11 +126,7 @@ def get_method(parser):
 
 
 def get_target_details(parser):
-    try:
-        details = vars(parser.parse_args())
-    except json.JSONDecodeError as ex:
-        raise utils.ArgumentException(ex)
-
+    details = vars(parser.parse_args())
     url = details['url']
     url = url if re.search(URL_REGEX, url) else f'http://{url}'
     return url, *[details[key] for key in ('headers', 'data', 'params')]
