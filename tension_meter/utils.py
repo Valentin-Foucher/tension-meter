@@ -8,3 +8,6 @@ class ArgumentException(ScriptException):
 
 class RequestException(ScriptException):
     pass
+
+
+MAX_ASYNC_REQUESTS = 1000
