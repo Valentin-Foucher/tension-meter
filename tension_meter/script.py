@@ -130,9 +130,13 @@ def get_testing_parser():
         help=''
     )
     parser.add_argument(
-        '-a', '--template',
+        '-c', '--template',
         type=str,
-        action=JsonObject,
+        help=''
+    )
+    parser.add_argument(
+        '-a', '--async',
+        action='store_true',
         help=''
     )
     return parser
@@ -172,4 +176,4 @@ def get_testing_details(parser):
     count = details['count'] if details['count'] > 0 else sys.maxsize
     time = datetime.datetime.now() + datetime.timedelta(seconds=details['time']) if details['time'] else None
 
-    return count, time, details['template']
+    return count, time, details['template'], details['async']
