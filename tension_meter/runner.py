@@ -45,7 +45,7 @@ class SyncRunner(Runner):
 
                 self.codes[response.status_code] += 1
                 print(core.format_response(response, self.method, self.url))
-        except KeyboardInterrupt:
+        finally:
             stats.show_results(self.codes)
 
 
