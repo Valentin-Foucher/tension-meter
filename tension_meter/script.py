@@ -170,6 +170,6 @@ def get_target_details(parser):
 def get_testing_details(parser):
     details = vars(parser.parse_known_args()[0])
     count = details['count'] if details['count'] > 0 else sys.maxsize
-    time = datetime.datetime.now() + datetime.timedelta(minutes=details['time']) if details['time'] else None
+    time = datetime.datetime.now() + datetime.timedelta(seconds=details['time']) if details['time'] else None
 
     return count, time, details['template']
