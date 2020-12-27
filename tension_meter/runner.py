@@ -1,7 +1,7 @@
 import abc
 import datetime
 
-from tension_meter import core, stats
+from tension_meter import core, stats, utils
 
 
 class Runner(abc.ABC):
@@ -13,9 +13,6 @@ class Runner(abc.ABC):
         self.data = data
         self.params = params
         self.limit = limit
-        self.is_not_over = self.has_reached_max_time_limit if isinstance(limit, datetime.datetime) \
-            else self.has_reached_max_count_limit
-
         self.cpt = 0
 
     def has_reached_max_count_limit(self):
@@ -31,6 +28,11 @@ class Runner(abc.ABC):
 
 
 class SyncRunner(Runner):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.is_not_over = self.has_reached_max_time_limit if isinstance(self.limit, datetime.datetime) \
+            else self.has_reached_max_count_limit
+
     def run(self):
         try:
             while self.is_not_over():
@@ -50,5 +52,12 @@ class SyncRunner(Runner):
 
 
 class AsyncRunner(Runner):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if isinstance(self.limit, datetime.datetime):
+            raise utils.ScriptException('Cannot use temporal limit with an async runner')
+
+        self.is_not_over = self.has_reached_max_count_limit
+
     def run(self):
         pass
