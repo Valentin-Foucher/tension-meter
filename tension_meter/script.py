@@ -87,8 +87,8 @@ def get_method_parser():
     return parser
 
 
-def get_details_parser(method_parser):
-    parser = argparse.ArgumentParser(description='', add_help=False, parents=[method_parser])
+def get_details_parser():
+    parser = argparse.ArgumentParser(description='', add_help=False)
     parser.add_argument(
         'url',
         type=str,
@@ -116,8 +116,8 @@ def get_details_parser(method_parser):
     return parser
 
 
-def get_testing_parser(details_parser):
-    parser = argparse.ArgumentParser(description='', parents=[details_parser])
+def get_testing_parser():
+    parser = argparse.ArgumentParser(description='', add_help=False)
     parser.add_argument(
         '-n', '--count',
         type=int,
@@ -138,6 +138,17 @@ def get_testing_parser(details_parser):
     return parser
 
 
+def get_main_parser():
+    method_parser = get_method_parser()
+    details_parser = get_details_parser()
+    testing_parser = get_testing_parser()
+    parser = argparse.ArgumentParser(
+        description='',
+        parents=[method_parser, details_parser, testing_parser])
+    parser.parse_args()
+    return method_parser, details_parser, testing_parser
+
+
 def get_method(parser):
     methods = []
     for method, selected in vars(parser.parse_known_args()[0]).items():
@@ -152,13 +163,12 @@ def get_method(parser):
 
 def get_target_details(parser):
     details = vars(parser.parse_known_args()[0])
-    url = details['url']
-    url = url if re.search(URL_REGEX, url) else f'http://{url}'
-    return url, *[details[key] for key in ('headers', 'data', 'params')]
+    url = details['url'] if re.search(URL_REGEX, details['url']) else f'http://{details["url"]}'
+    return url, details['headers'], details['data'], details['params']
 
 
 def get_testing_details(parser):
-    details = vars(parser.parse_args())
+    details = vars(parser.parse_known_args()[0])
     count = details['count'] if details['count'] > 0 else sys.maxsize
     time = datetime.datetime.now() + datetime.timedelta(minutes=details['time']) if details['time'] else None
 

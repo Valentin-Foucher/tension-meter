@@ -13,9 +13,7 @@ def main():
 
     # 1. initialisation
     try:
-        method_parser = script.get_method_parser()
-        details_parser = script.get_details_parser(method_parser)
-        testing_parser = script.get_testing_parser(details_parser)
+        method_parser, details_parser, testing_parser = script.get_main_parser()
         method = script.get_method(method_parser)
         url, headers, data, params = script.get_target_details(details_parser)
         count, time, template = script.get_testing_details(testing_parser)
