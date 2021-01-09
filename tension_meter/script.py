@@ -49,38 +49,31 @@ def get_method_parser():
     parser = argparse.ArgumentParser(description='', add_help=False)
     parser.add_argument(
         '-P', '--POST', '--post',
-        action='store_true',
-        help=''
+        action='store_true'
     )
     parser.add_argument(
         '-G', '--GET', '--get',
         action='store_true',
-        help=''
     )
     parser.add_argument(
         '-Q', '--PUT', '--put',
         action='store_true',
-        help=''
     )
     parser.add_argument(
         '-D', '--DELETE', '--delete',
         action='store_true',
-        help=''
     )
     parser.add_argument(
         '-I', '--HEAD', '--head',
         action='store_true',
-        help=''
     )
     parser.add_argument(
         '-R', '--PATCH', '--patch',
         action='store_true',
-        help=''
     )
     parser.add_argument(
         '-O', '--OPTIONS', '--options',
         action='store_true',
-        help=''
     )
 
     return parser
@@ -91,26 +84,26 @@ def get_details_parser():
     parser.add_argument(
         'url',
         type=str,
-        help=''
+        help='Target url'
     )
     parser.add_argument(
         '-d', '--data',
         type=str,
         action=JsonObject,
-        help=''
+        help='Payload in JSON format'
     )
     parser.add_argument(
         '-p', '--params',
         type=str,
         action=JsonObject,
-        help=''
+        help='Query parameters in JSON format'
     )
     parser.add_argument(
         '-H', '--headers',
         type=str,
         action=HeadersObject,
         nargs='*',
-        help=''
+        help='Headers in JSON format'
     )
     return parser
 
@@ -121,27 +114,28 @@ def get_testing_parser():
         '-n', '--count',
         type=int,
         default=-1,
-        help=''
+        help=f'The maximum amount of requests you want to perform '
+             f'(by default, infinity in sync mode, {utils.MAX_ASYNC_REQUESTS} in async mode)'
     )
     parser.add_argument(
         '-t', '--time',
         type=int,
-        help=''
+        help='The maximum time in seconds you want to be requesting (only in sync mode if no count was specified)'
     )
     parser.add_argument(
         '-c', '--template',
         type=str,
-        help=''
+        help='TODO'
     )
     parser.add_argument(
         '-a', '--async',
         action='store_true',
-        help=''
+        help='Shall the requests be performed asynchronously'
     )
     parser.add_argument(
         '-v', '--verbose',
         action='store_true',
-        help=''
+        help='Shall you see the responses content'
     )
     return parser
 
@@ -177,7 +171,14 @@ def get_target_details(parser):
 
 def get_testing_details(parser):
     details = vars(parser.parse_known_args()[0])
-    count = details['count'] if details['count'] > 0 else sys.maxsize
-    time = datetime.datetime.now() + datetime.timedelta(seconds=details['time']) if details['time'] else None
+    if details['count'] > 0:
+        count = details['count']
+        time = None
+    elif details['async']:
+        count = utils.MAX_ASYNC_REQUESTS
+        time = None
+    else:
+        count = sys.maxsize
+        time = datetime.datetime.now() + datetime.timedelta(seconds=details['time']) if details['time'] else None
 
     return count, time, details['template'], details['async'], details['verbose']
