@@ -6,7 +6,7 @@ from tension_meter import core, stats, utils
 
 
 class Runner(abc.ABC):
-    def __init__(self, url, method, codes, limit, headers=None, data=None, params=None):
+    def __init__(self, url, method, codes, limit, headers=None, data=None, params=None, verbose=False):
         self.url = url
         self.method = method
         self.codes = codes
@@ -14,6 +14,7 @@ class Runner(abc.ABC):
         self.data = data
         self.params = params
         self.limit = limit
+        self.verbose = verbose
         self.cpt = 0
 
     def has_reached_max_count_limit(self):
@@ -33,7 +34,7 @@ class Runner(abc.ABC):
             self.codes[response.status_code] = 0
 
         self.codes[response.status_code] += 1
-        return core.format_response(response, self.method, self.url)
+        return core.format_response(response, self.method, self.url, self.verbose)
 
     @abc.abstractmethod
     def run(self):

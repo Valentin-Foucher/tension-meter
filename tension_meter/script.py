@@ -3,7 +3,6 @@ import json
 import re
 import datetime
 import sys
-
 import requests
 
 from tension_meter import utils
@@ -139,6 +138,11 @@ def get_testing_parser():
         action='store_true',
         help=''
     )
+    parser.add_argument(
+        '-v', '--verbose',
+        action='store_true',
+        help=''
+    )
     return parser
 
 
@@ -176,4 +180,4 @@ def get_testing_details(parser):
     count = details['count'] if details['count'] > 0 else sys.maxsize
     time = datetime.datetime.now() + datetime.timedelta(seconds=details['time']) if details['time'] else None
 
-    return count, time, details['template'], details['async']
+    return count, time, details['template'], details['async'], details['verbose']
