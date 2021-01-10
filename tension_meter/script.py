@@ -8,16 +8,6 @@ import requests
 from tension_meter import utils
 
 
-HTTP_METHODS = {
-    'POST': requests.post,
-    'GET': requests.get,
-    'PUT': requests.put,
-    'DELETE': requests.delete,
-    'HEAD': requests.head,
-    'PATCH': requests.patch,
-    'OPTIONS': requests.options
-}
-
 URL_REGEX = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
 
 
@@ -128,9 +118,14 @@ def get_testing_parser():
         help='TODO'
     )
     parser.add_argument(
-        '-c', '--concurrent',
+        '-a', '--async',
         action='store_true',
         help='Shall the requests be performed asynchronously'
+    )
+    parser.add_argument(
+        '-c', '--concurrent',
+        action='store_true',
+        help='Shall the requests be performed concurrently'
     )
     parser.add_argument(
         '-v', '--verbose',
@@ -160,7 +155,7 @@ def get_method(parser):
     if len(methods) > 1:
         raise utils.ArgumentException(f'Only one method accepted, got {methods}')
 
-    return HTTP_METHODS.get(methods[0])
+    return methods[0].lower()
 
 
 def get_target_details(parser):
@@ -174,11 +169,18 @@ def get_testing_details(parser):
     if details['count'] > 0:
         count = details['count']
         time = None
-    elif details['concurrent']:
+    elif details['concurrent'] or details['async']:
         count = utils.MAX_ASYNC_REQUESTS
         time = None
     else:
         count = sys.maxsize
         time = datetime.datetime.now() + datetime.timedelta(seconds=details['time']) if details['time'] else None
 
-    return count, time, details['template'], details['concurrent'], details['verbose']
+    if details['concurrent'] and details['async']:
+        raise utils.ArgumentException('Select one mode between concurrent and asynchronous at most')
+
+    mode = 'concurrent' if details['concurrent'] \
+        else 'async' if details['async'] \
+        else None
+
+    return count, time, details['template'], mode, details['verbose']
