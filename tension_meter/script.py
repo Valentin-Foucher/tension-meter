@@ -123,12 +123,12 @@ def get_testing_parser():
         help='The maximum time in seconds you want to be requesting (only in sync mode if no count was specified)'
     )
     parser.add_argument(
-        '-c', '--template',
+        '-b', '--template',
         type=str,
         help='TODO'
     )
     parser.add_argument(
-        '-a', '--async',
+        '-c', '--concurrent',
         action='store_true',
         help='Shall the requests be performed asynchronously'
     )
@@ -174,11 +174,11 @@ def get_testing_details(parser):
     if details['count'] > 0:
         count = details['count']
         time = None
-    elif details['async']:
+    elif details['concurrent']:
         count = utils.MAX_ASYNC_REQUESTS
         time = None
     else:
         count = sys.maxsize
         time = datetime.datetime.now() + datetime.timedelta(seconds=details['time']) if details['time'] else None
 
-    return count, time, details['template'], details['async'], details['verbose']
+    return count, time, details['template'], details['concurrent'], details['verbose']

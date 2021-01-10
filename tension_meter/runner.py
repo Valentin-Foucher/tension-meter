@@ -68,16 +68,16 @@ class SyncRunner(Runner):
             print(self.make_request())
 
 
-def _async_make_request(runner):
+def _concurrent_make_request(runner):
     """
     Job designed to be ran in an asynchronous mode
-    :param runner: AsyncRunner instance
+    :param runner: ConcurrentRunner instance
     :return: result of make_request
     """
     return runner.make_request(), list(runner.codes.keys())[0]
 
 
-class AsyncRunner(Runner):
+class ConcurrentRunner(Runner):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if isinstance(self.limit, datetime.datetime):
@@ -88,7 +88,7 @@ class AsyncRunner(Runner):
     def _run(self):
         mp.set_start_method('spawn')
         pool = mp.Pool(4)
-        results = pool.map_async(_async_make_request, (self for _ in range(self.limit)))
+        results = pool.map_async(_concurrent_make_request, (self for _ in range(self.limit)))
         pool.close()
         pool.join()
         output = ''

@@ -15,7 +15,7 @@ def main():
         method_parser, details_parser, testing_parser = script.get_main_parser()
         method = script.get_method(method_parser)
         url, headers, data, params = script.get_target_details(details_parser)
-        count, time, template, _async, verbose = script.get_testing_details(testing_parser)
+        count, time, template, concurrent, verbose = script.get_testing_details(testing_parser)
     except utils.ScriptException as e:
         print(e)
         return
@@ -25,9 +25,9 @@ def main():
     # 2. Mode selection
     if template:
         # TODO -> setup templates
-        runner_class = runner.AsyncRunner
-    elif _async:
-        runner_class = runner.AsyncRunner
+        runner_class = runner.ConcurrentRunner
+    elif concurrent:
+        runner_class = runner.ConcurrentRunner
     else:
         runner_class = runner.SyncRunner
 
