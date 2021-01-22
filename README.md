@@ -19,8 +19,14 @@ Installing dependencies from Pipfile.lock (fa3efc)...
   🐍   ▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉ 11/11 — 00:00:02
 ```
 
-You are good to go  
-😄
+Now, you are good to go 😄
+
+## Build a Docker image
+
+From the repository root, run:
+```bash
+$ docker build .
+```
 
 ## Help
 
@@ -53,11 +59,4 @@ optional arguments:
   -a, --async           Shall the requests be performed asynchronously
   -c, --concurrent      Shall the requests be performed concurrently
   -v, --verbose         Shall you see the responses content
-```
-
-## Docker image
-
-From the repository root, run:
-```bash
-docker build .
 ```
